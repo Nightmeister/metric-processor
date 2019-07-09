@@ -2,8 +2,9 @@
 ### Example user template template
 ### Example user template
 
-# IntelliJ project files
+# IntelliJ project store
 .idea
 *.iml
 out
 gen
+*/target
