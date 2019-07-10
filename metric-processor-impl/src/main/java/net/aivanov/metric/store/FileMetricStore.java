@@ -1,9 +1,5 @@
 package net.aivanov.metric.store;
 
-/**
- * @author Artem_Ivanov
- */
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;

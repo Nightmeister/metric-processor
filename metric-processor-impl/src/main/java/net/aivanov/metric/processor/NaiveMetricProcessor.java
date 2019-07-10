@@ -7,6 +7,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import net.aivanov.metric.Metric;
 import net.aivanov.metric.store.MetricStore;
 
@@ -103,7 +104,13 @@ public class NaiveMetricProcessor implements MetricProcessor {
      * Stop unloader.
      */
     private void stop() {
-      unloadExecutor.shutdown();
+      unloadExecutor.shutdownNow();
+
+      try {
+        unloadExecutor.awaitTermination(10, TimeUnit.SECONDS);
+      } catch (InterruptedException e) {
+        throw new RuntimeException("Awaiting termination error");
+      }
     }
 
     /**
@@ -113,7 +120,7 @@ public class NaiveMetricProcessor implements MetricProcessor {
     private void loopPollMetricsFromQueue() {
       Queue<Metric> metricsToStore = new PriorityQueue<>(UNLOAD_COUNT, METRIC_QUEUE_COMPARATOR);
 
-      while (true) {
+      while (!Thread.interrupted()) {
         Metric metric = waitAvailableMetric();
 
         long polledCount = 0L;
